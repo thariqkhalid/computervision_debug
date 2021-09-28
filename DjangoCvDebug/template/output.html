@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+<body id="imgs">
+    <div>
+        {% block content %}
+            <h2>this is home page</h2>
+            <input type="file" id="filepicker" name="fileList" webkitdirectory multiple />
+            <ul id="listing"></ul>
+            <p id="testingForImages"></p>
+            <div id="preview1"></div> 
+            </div>
+
+
+        {% endblock %}
+    </div>
+   
+</body>
+<script>
+    document.getElementById("filepicker").addEventListener("change", function(event) {
+  let output = document.getElementById("listing");
+
+//   testing imgs
+//   var images=document.getElementById('testingForImages');
+//   test end
+  let files = event.target.files;
+  var preview1 = document.querySelector('#preview1');
+  for (let i=0; i<files.length; i++) {
+    // let item = document.createElement("li");
+    // item.innerHTML = files[i].webkitRelativePath;
+    // output.appendChild(item);
+
+        function readAndPreview(i) {
+
+    // Make sure `file.name` matches our extensions criteria
+    if (!/\.(jpe?g|png|gif)$/i.test(i.name)) {
+        return alert(i.name + " is not an image");
+    } // else...
+
+    var reader = new FileReader();
+
+    reader.addEventListener("load", function() {
+        var image = new Image();
+        image.height = 100;
+        image.title  = i.name;
+        image.src    = this.result;
+        preview1.appendChild(image);
+    });
+
+    reader.readAsDataURL(file);
+
+    }
+
+
+
+    // var img = new FileReader();
+    // img.src = files[i];
+
+    // var src = document.getElementById("elementid");
+    // src.appendChild(img);
+    
+
+    //tried to show the images but not working
+    // var img = new Image()
+    // img.src = item;
+    // document.getElementById('imgs').appendChild(img);
+
+    
+    
+  };
+}, false);
+
+</script>
+
+</html>
+
+
