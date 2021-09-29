@@ -10,6 +10,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('output/', views.output, name='output'),
     path('compare/', views.compare, name='compare'),
+    path('test/', views.test, name='test'),
 ]
 
 
