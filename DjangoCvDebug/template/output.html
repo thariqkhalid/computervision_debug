@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
     <style>
-        body{
+        section{
         display: flex;
         justify-content: center;
         align-items: center;
@@ -20,15 +20,34 @@
         height: 200px;
         background-size: cover;
         }
+        .gallery-text {
+    
+        float: left;
+        width: 30%;
+        margin: 1%;
+        }
     </style>
 </head>
 
 <body>
-
+<section>
     <h1> select input files</h1>
     <input id="file-input1" type="file"webkitdirectory mozdirectory>
     
+    <div class="gallery-text">
+        <button onclick=ShowInput()>SHOW IMAGES</button>
+        <button>PREVIOUS</button>
+        <button>NEXT</button>
+        
+    </div>
+    
     <div id="display_image"></div>
+    
+</section>
+<section>
+   
+</section>
+    
     
 </body>
 <script>
@@ -64,7 +83,10 @@ reader.readAsDataURL(file);
 }
 
 }
+
 document.querySelector('#file-input1').addEventListener("change", previewInput);
+
+
 </script>
 
 </html>
