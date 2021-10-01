@@ -46,12 +46,12 @@
     <div id="gallery-text">
         <div class="gallery-text">
             <h3> select input files</h3>
-            <input id="file-input1" type="file" multiple>
+            <input id="file-input1" type="file" webkitdirectory mozdirectory>
             <div id="preview1"></div>  
         </div>
         <div class="gallery-text">
             <h3> select predicted files</h3>
-            <input id="file-input2" type="file" multiple>
+            <input id="file-input2" type="file" webkitdirectory mozdirectorye>
             <div id="preview2"></div> 
         </div>
             
@@ -87,6 +87,7 @@
     reader.addEventListener("load", function() {
         var image = new Image();
         image.height = 400;
+        image.width = 400;
         image.title  = file.name;
         image.src    = this.result;
         preview1.appendChild(image);
@@ -120,6 +121,7 @@
     reader.addEventListener("load", function() {
         var image = new Image();
         image.height = 400;
+        image.width = 400;
         image.title  = file.name;
         image.src    = this.result;
         preview1.appendChild(image);
