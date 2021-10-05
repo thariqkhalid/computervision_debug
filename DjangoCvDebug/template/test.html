@@ -165,14 +165,13 @@ console.log(imagefiles.length)
 
 
 
-var num = 0;
-var end =20;
+
 function readImage() {
    
         //FileList object
     var output = $(".preview-images-zone");
 
-    for (let i = num; i < end ; i++) {
+    for (let i = 0; i <= 19 ; i++) {
         var file = imagefiles[i];
         
         if (!file.type.match('image')) continue;
@@ -181,41 +180,42 @@ function readImage() {
         
         picReader.addEventListener('load', function (event) {
             var picFile = event.target;
-            var html =  '<div class="preview-image preview-show-' + num + '">' +
-                        '<div class="image-cancel" data-no="' + num + '">x</div>' +
-                        '<div class="image-zone"><img id="pro-img-' + num + '" src="' + picFile.result + '"></div>' ;
+            var html =  '<div class="preview-image preview-show-' + i + '">' +
+                        '<div class="image-cancel" data-no="' + i + '">x</div>' +
+                        '<div class="image-zone"><img id="pro-img-' + i + '" src="' + picFile.result + '"></div>' ;
                         // +
                         // '<div class="tools-edit-image"><a href="javascript:void(0)" data-no="' + num + '" class="btn btn-light btn-edit-image">edit</a></div>' +
                         // '</div>';
 
             output.append(html);
-            num = num + 1;
+            
             
         });
 
         picReader.readAsDataURL(file);
     }
-    end = end + num;
+    
     $("#pro-image").val('');
     
 }
 
+var StartNextImgBatch =20
+var EndNextImgBatch =39
 // NEXT IMAGES FUNCTION
 function NextImage() {
-     // get the old images and removing it
-     console.log(num , end)
     var output = $(".preview-images-zone");
-    if (num == 20 && end == 40){
-        for (let i = 0; i <=20 ; i++) {
+     // get the old images and removing it
+    for (let i = 0; i <=20 ; i++) {
             $(".preview-image.preview-show-"+i).remove();
         }
+
+    for (let i=StartNextImgBatch;i<EndNextImgBatch;i++){
+        $(".preview-image.preview-show-"+i).remove();
     }
-    else{
-        for(let i=num ;i<=end ; i++ ){
-            $(".preview-image.preview-show-"+i).remove();
-        }
-    }
-    for (let i = num; i < end ; i++) {
+  
+  
+   
+    for (let i = StartNextImgBatch; i < EndNextImgBatch; i++) {
         
         var file = imagefiles[i];
         
@@ -225,41 +225,38 @@ function NextImage() {
         
         picReader.addEventListener('load', function (event) {
             var picFile = event.target;
-            var html =  '<div class="preview-image preview-show-' + num + '">' +
-                        '<div class="image-cancel" data-no="' + num + '">x</div>' +
-                        '<div class="image-zone"><img id="pro-img-' + num + '" src="' + picFile.result + '"></div>' ;
+            var html =  '<div class="preview-image preview-show-' + StartNextImgBatch + '">' +
+                        '<div class="image-cancel" data-no="' + StartNextImgBatch + '">x</div>' +
+                        '<div class="image-zone"><img id="pro-img-' + StartNextImgBatch + '" src="' + picFile.result + '"></div>' ;
                         // +
                         // '<div class="tools-edit-image"><a href="javascript:void(0)" data-no="' + num + '" class="btn btn-light btn-edit-image">edit</a></div>' +
                         // '</div>';
 
             output.append(html);
-            num = num + 1;
+            
             
         });
 
         picReader.readAsDataURL(file);
     }
-    end = end + num;
+    StartNextImgBatch = StartNextImgBatch + 20 ;
+    EndNextImgBatch=  EndNextImgBatch + 20 ;
+   
     $("#pro-image").val('');
-    console.log(end)
-
+    
+console.log(StartNextImgBatch,EndNextImgBatch);
 }
 
 // PREVIOUS IMAGES FUNCTION
 function PreviousImage() {
      // get the old images and removing it
-     var output = $(".preview-images-zone");
-    if (num == 0 && end == 20){
-        for (let i = 0; i <=19 ; i++) {
-            $(".preview-image.preview-show-"+i).remove();
-        }
+    var output = $(".preview-images-zone");
+    for (let i=StartNextImgBatch;i<EndNextImgBatch;i++){
+        $(".preview-image.preview-show-"+i).remove();
     }
-    else{
-        for(let i=end ;i<=num ; i-- ){
-            $(".preview-image.preview-show-"+i).remove();
-        }
-    }
-    for (let i = end; i <=num ; i--) {
+
+
+    for (let i = EndNextImgBatch; i >=StartNextImgBatch ; i--) {
         
         var file = imagefiles[i];
         
@@ -269,23 +266,26 @@ function PreviousImage() {
         
         picReader.addEventListener('load', function (event) {
             var picFile = event.target;
-            var html =  '<div class="preview-image preview-show-' + num + '">' +
-                        '<div class="image-cancel" data-no="' + num + '">x</div>' +
-                        '<div class="image-zone"><img id="pro-img-' + num + '" src="' + picFile.result + '"></div>' ;
+            var html =  '<div class="preview-image preview-show-' + EndNextImgBatch + '">' +
+                        '<div class="image-cancel" data-no="' + EndNextImgBatch + '">x</div>' +
+                        '<div class="image-zone"><img id="pro-img-' + EndNextImgBatch + '" src="' + picFile.result + '"></div>' ;
                         // +
                         // '<div class="tools-edit-image"><a href="javascript:void(0)" data-no="' + num + '" class="btn btn-light btn-edit-image">edit</a></div>' +
                         // '</div>';
 
             output.append(html);
-            num = num - 1;
+            
             
         });
 
         picReader.readAsDataURL(file);
     }
-    end = end - num;
+    
     $("#pro-image").val('');
-    console.log(end)
+    StartNextImgBatch = StartNextImgBatch - 20 ;
+    EndNextImgBatch=  EndNextImgBatch - 20 ;
+    console.log(StartNextImgBatch,EndNextImgBatch)
+    
 
 }
 
