@@ -11,6 +11,7 @@ urlpatterns = [
     path('output/', views.output, name='output'),
     path('compare/', views.compare, name='compare'),
     path('test/', views.test, name='test'),
+    path('test2/', views.test2, name='test2'),
 ]
 
 

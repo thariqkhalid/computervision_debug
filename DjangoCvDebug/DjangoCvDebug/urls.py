@@ -23,4 +23,5 @@ urlpatterns = [
     path('output/', include('CvDebuger.urls')),
     path('compare/', include('CvDebuger.urls')),
     path('test/', include('CvDebuger.urls')),
+    path('test2/', include('CvDebuger.urls')),
 ]

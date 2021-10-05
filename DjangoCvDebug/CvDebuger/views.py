@@ -17,3 +17,6 @@ def compare(request):
 
 def test(request):
     return render(request,"test.html")
+
+def test2(request):
+    return render(request,"test2.html")

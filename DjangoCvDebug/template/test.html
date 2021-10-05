@@ -8,8 +8,8 @@
     <style>
        body {
     min-height: 100vh;
-    background-color: #757f9a;
-    background-image: linear-gradient(147deg, #757f9a 0%, #d7dde8 100%);
+    background-color: whitesmoke;
+    background-image: linear-gradient(147deg, #d4dbdb 0%, #d7dde8 100%);
 }
         .preview-images-zone {
     width: 100%;
@@ -20,19 +20,19 @@
     position: relative;
     overflow:auto;
 }
-.preview-images-zone > .preview-image:first-child {
+/* .preview-images-zone > .preview-image:first-child {
     height: 600px;
     width: 600px;
     position: relative;
     margin-right: 5px;
-}
+} */
 .preview-images-zone > .preview-image {
     height: 200px;
     width: 200px;
     position: relative;
-    margin-right: 0px;
+    margin-right: 80px;
     float: left;
-    margin-bottom: 5px;
+    margin-bottom: 50px;
 }
 .preview-images-zone > .preview-image > .image-zone {
     width: 100%;
@@ -62,6 +62,7 @@
     cursor: pointer;
     display: none;
     z-index: 100;
+    margin: 20px 10px;
 }
 .preview-image:hover > .image-zone {
     cursor: move;
@@ -79,7 +80,7 @@
 .container {
     padding-top: 10px;
 }a:link {
-  color: whitesmoke;
+  color: red;
 }
 
 /* visited link */
@@ -92,34 +93,53 @@ a:hover {
   color: hotpink;
 }
 
+
     </style>
 </head>
 <body>
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 <!------ Include the above in your HEAD tag ---------->
 
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<div class="container">
-    <fieldset class="form-group">
-        <h3><a href="javascript:void(0)" onclick="$('#pro-image').click()" >Upload Folder</a></h3>
-        <input type="file" id="pro-image" name="pro-image" style="display: none;" class="form-control" webkitdirectory mozdirectory>
-    </fieldset>
-    <div class="preview-images-zone">
-        <div class="preview-image preview-show-1">
-            <div class="image-cancel" data-no="1">x</div>
-            <div class="image-zone"></div>
-            <!-- <div class="tools-edit-image"><a href="javascript:void(0)" data-no="1" class="btn btn-light btn-edit-image">edit</a></div> -->
+<div class="container-fluid">
+    <div class="row">
+        <fieldset class="form-group">
+            <div class="container">
+                <h3><a href="javascript:void(0)" onclick="$('#pro-image').click()" >Upload Folder</a></h3>
+                <input type="file" id="pro-image" name="pro-image" style="display: none;" class="form-control" webkitdirectory mozdirectory>
+                <ul class="pager">
+                   
+                    <li class="next"><a href="#" onclick="readImage()">ShowImages</a></li>
+                    
+                    
+                </ul>
+            </div>       
+            </fieldset>
+        
+        <div class="preview-images-zone">
+            
+        
         </div>
-       
+        
+        <div class="container">
+                           
+            <ul class="pager">
+              <li class="previous"><a href="#"onclick="PreviousImage()">Previous</a></li>
+              <li class="next"><a href="#"onclick="NextImage()">Next</a></li>
+            </ul>
+        </div>
     </div>
 </div>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 </body>
 <script>
     $(document).ready(function() {
-    document.getElementById('pro-image').addEventListener('change', readImage, false);
+    document.getElementById('pro-image').addEventListener('change', SaveImagesInArray, false);
     
     $( ".preview-images-zone" ).sortable();
     
@@ -129,41 +149,145 @@ a:hover {
     });
 });
 
-
-
-var num = 1;
-function readImage() {
+var imagefiles=[]
+function SaveImagesInArray(){
     if (window.File && window.FileList && window.FileReader) {
         var files = event.target.files; //FileList object
-        var output = $(".preview-images-zone");
-
-        for (let i = 0; i < files.length; i++) {
+        for (let i = 0; i <=files.length ; i++) {
             var file = files[i];
-            if (!file.type.match('image')) continue;
-            
-            var picReader = new FileReader();
-            
-            picReader.addEventListener('load', function (event) {
-                var picFile = event.target;
-                var html =  '<div class="preview-image preview-show-' + num + '">' +
-                            '<div class="image-cancel" data-no="' + num + '">x</div>' +
-                            '<div class="image-zone"><img id="pro-img-' + num + '" src="' + picFile.result + '"></div>' ;
-                            // +
-                            // '<div class="tools-edit-image"><a href="javascript:void(0)" data-no="' + num + '" class="btn btn-light btn-edit-image">edit</a></div>' +
-                            // '</div>';
-
-                output.append(html);
-                num = num + 1;
-            });
-
-            picReader.readAsDataURL(file);
+            imagefiles.push(file)
         }
-        $("#pro-image").val('');
-    } else {
-        console.log('Browser not support');
-    }
+        
+
+}
+console.log(imagefiles.length)
 }
 
+
+
+var num = 0;
+var end =20;
+function readImage() {
+   
+        //FileList object
+    var output = $(".preview-images-zone");
+
+    for (let i = num; i < end ; i++) {
+        var file = imagefiles[i];
+        
+        if (!file.type.match('image')) continue;
+        
+        var picReader = new FileReader();
+        
+        picReader.addEventListener('load', function (event) {
+            var picFile = event.target;
+            var html =  '<div class="preview-image preview-show-' + num + '">' +
+                        '<div class="image-cancel" data-no="' + num + '">x</div>' +
+                        '<div class="image-zone"><img id="pro-img-' + num + '" src="' + picFile.result + '"></div>' ;
+                        // +
+                        // '<div class="tools-edit-image"><a href="javascript:void(0)" data-no="' + num + '" class="btn btn-light btn-edit-image">edit</a></div>' +
+                        // '</div>';
+
+            output.append(html);
+            num = num + 1;
+            
+        });
+
+        picReader.readAsDataURL(file);
+    }
+    end = end + num;
+    $("#pro-image").val('');
+    
+}
+
+// NEXT IMAGES FUNCTION
+function NextImage() {
+     // get the old images and removing it
+     console.log(num , end)
+    var output = $(".preview-images-zone");
+    if (num == 20 && end == 40){
+        for (let i = 0; i <=20 ; i++) {
+            $(".preview-image.preview-show-"+i).remove();
+        }
+    }
+    else{
+        for(let i=num ;i<=end ; i++ ){
+            $(".preview-image.preview-show-"+i).remove();
+        }
+    }
+    for (let i = num; i < end ; i++) {
+        
+        var file = imagefiles[i];
+        
+        if (!file.type.match('image')) continue;
+        
+        var picReader = new FileReader();
+        
+        picReader.addEventListener('load', function (event) {
+            var picFile = event.target;
+            var html =  '<div class="preview-image preview-show-' + num + '">' +
+                        '<div class="image-cancel" data-no="' + num + '">x</div>' +
+                        '<div class="image-zone"><img id="pro-img-' + num + '" src="' + picFile.result + '"></div>' ;
+                        // +
+                        // '<div class="tools-edit-image"><a href="javascript:void(0)" data-no="' + num + '" class="btn btn-light btn-edit-image">edit</a></div>' +
+                        // '</div>';
+
+            output.append(html);
+            num = num + 1;
+            
+        });
+
+        picReader.readAsDataURL(file);
+    }
+    end = end + num;
+    $("#pro-image").val('');
+    console.log(end)
+
+}
+
+// PREVIOUS IMAGES FUNCTION
+function PreviousImage() {
+     // get the old images and removing it
+     var output = $(".preview-images-zone");
+    if (num == 0 && end == 20){
+        for (let i = 0; i <=19 ; i++) {
+            $(".preview-image.preview-show-"+i).remove();
+        }
+    }
+    else{
+        for(let i=end ;i<=num ; i-- ){
+            $(".preview-image.preview-show-"+i).remove();
+        }
+    }
+    for (let i = end; i <=num ; i--) {
+        
+        var file = imagefiles[i];
+        
+        if (!file.type.match('image')) continue;
+        
+        var picReader = new FileReader();
+        
+        picReader.addEventListener('load', function (event) {
+            var picFile = event.target;
+            var html =  '<div class="preview-image preview-show-' + num + '">' +
+                        '<div class="image-cancel" data-no="' + num + '">x</div>' +
+                        '<div class="image-zone"><img id="pro-img-' + num + '" src="' + picFile.result + '"></div>' ;
+                        // +
+                        // '<div class="tools-edit-image"><a href="javascript:void(0)" data-no="' + num + '" class="btn btn-light btn-edit-image">edit</a></div>' +
+                        // '</div>';
+
+            output.append(html);
+            num = num - 1;
+            
+        });
+
+        picReader.readAsDataURL(file);
+    }
+    end = end - num;
+    $("#pro-image").val('');
+    console.log(end)
+
+}
 
 </script>
 </html>
