@@ -28,11 +28,11 @@
 } */
 .preview-images-zone > .preview-image {
     height: 200px;
-    width: 200px;
+    width: 350px;
     position: relative;
-    margin-right: 80px;
+    margin-right: 2px;
     float: left;
-    margin-bottom: 50px;
+    margin-bottom: 10px;
 }
 .preview-images-zone > .preview-image > .image-zone {
     width: 100%;
@@ -136,6 +136,7 @@ a:hover {
     </div>
 </div>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src='jquery.elevatezoom.js'></script>
 </body>
 <script>
     $(document).ready(function() {
@@ -163,9 +164,17 @@ function SaveImagesInArray(){
 console.log(imagefiles.length)
 }
 
+//image zoom
+$(".preview-image.preview-show-"+no).elevateZoom({
+    zoomType: "inner",
+    cursor: "crosshair",
+    zoomWindowFadeIn: 500,
+    zoomWindowFadeOut: 750
+});
+ 
 
 
-
+// read and display images
 function readImage() {
    
         //FileList object
