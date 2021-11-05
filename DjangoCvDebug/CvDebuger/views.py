@@ -20,3 +20,13 @@ def test(request):
 
 def test2(request):
     return render(request,"test2.html")
+   
+
+def videoupload(request):
+    return render(request,"videoupload.html")
+
+def  Builderapp(request):
+    return render(request,"testForBuilderapp.html")
+
+def  pannellum(request):
+    return render(request,"pannellum.html")

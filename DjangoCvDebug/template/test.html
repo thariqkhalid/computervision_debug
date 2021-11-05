@@ -136,7 +136,7 @@ a:hover {
     </div>
 </div>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-<script src='jquery.elevatezoom.js'></script>
+
 </body>
 <script>
     $(document).ready(function() {
@@ -165,13 +165,13 @@ console.log(imagefiles.length)
 }
 
 //image zoom
-$(".preview-image.preview-show-"+no).elevateZoom({
+{% comment %} $(".preview-image.preview-show-"+no).elevateZoom({
     zoomType: "inner",
     cursor: "crosshair",
     zoomWindowFadeIn: 500,
     zoomWindowFadeOut: 750
 });
- 
+  {% endcomment %}
 
 
 // read and display images
@@ -212,6 +212,7 @@ var StartNextImgBatch =20
 var EndNextImgBatch =39
 // NEXT IMAGES FUNCTION
 function NextImage() {
+    console.log(StartNextImgBatch,EndNextImgBatch);
     var output = $(".preview-images-zone");
      // get the old images and removing it
     for (let i = 0; i <=20 ; i++) {

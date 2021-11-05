@@ -1,0 +1,332 @@
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>videoupload</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <style>
+        .button {
+  border-style: solid;
+  border-width: 0px;
+  cursor: pointer;
+  font-family: "museo-sans-fontspring", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  font-weight: normal;
+  line-height: normal;
+  margin: 0 0 1.25rem;
+  position: center;
+  text-decoration: none;
+  text-align: center;
+  -webkit-appearance: none;
+  -webkit-border-radius: 0;
+  display: inline-block;
+  padding-top: 1rem;
+  padding-right: 2rem;
+  padding-bottom: 1.0625rem;
+  padding-left: 2rem;
+  font-size: 1rem;
+  background-color: #00c7e4;
+  border-color: #009fb6;
+  color: #FFFFFF;
+  border-radius: 3px;
+  border-bottom: 1px solid #008194;
+  text-transform: uppercase;
+  font-weight: 500;
+  transition: background-color 300ms ease-out;
+}
+
+h1 {
+  font-weight: 500;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  font-family: "museo-sans-fontspring", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  color: #565656;
+}
+
+#upload-input {
+  height: 0px;
+  width: 0px;
+  overflow: hidden
+}
+
+textarea {
+  background-color: #DDDDDD;
+  color: grey;
+}
+
+#loader {
+  display: none;
+}
+
+p {
+  font-family: "museo-sans-fontspring", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  color: #525252;
+}
+
+a {
+  color: #00c7e4;
+  text-decoration: none;
+}
+    </style>
+</head>
+<body>
+    <form action="https://upload.embed.ly/1/video?key=YOUR_API_KEY" method="POST" enctype="multipart/form-data" name="upload_form">
+        <div id="upload-button" class="button">Upload Video</div>
+        <div id="upload-input">
+          <input id="video_file" name="video_file" type="file">
+        </div>
+      </form>
+      <div class="url-display"></div>
+      <div class="embed-code"></div>
+      <div class="video-display"></div>
+      <img id="loader" src="https://i.imgur.com/s4Z4mdr.gif">
+</body>
+<script>
+    var emb_key = "YOUR_API_KEY";
+
+$(document).ready(function() {
+
+  // Connect the styled button with the form input. The input is hidden. This is done in order to have a custom embed button. 
+  $("#upload-button").click(function(e) {
+    $('#video_file').click();
+  })
+
+  // Once the video file is added, display the progress UI and submit the form for upload.
+  $("#video_file").change(function(e) {
+    $("#loader").css('display', "block");
+    $("#progress-percent").css('display', "block");
+    $("form[name='upload_form']").submit();
+    e.preventDefault();
+  })
+
+  // The sumbit function makes a post request. By default this replaces the page with the response, which is the JSON response after the post request. To stay on the same page the ajax request requires some more information.
+  $("form[name='upload_form'").submit(function(e) {
+    e.preventDefault();
+    var fd = new FormData($("form")[0]);
+    $.ajax({
+      url: $(this).attr('action'),
+      data: fd,
+      processData: false,
+      contentType: false,
+      crossDomain: true,
+      headers: {
+        'Access-Control-Allow-Origin': '*'
+      },
+      type: 'POST',
+      success: function(data, textStatus, xhr) {
+        // On receiving the response, update the UI with the embed code and URL of the video
+        successText(data);
+
+        //Query the status endpoint 
+        var call = "https://upload.embed.ly/1/status?key=" + emb_key + "&video_id=" + data.video_id;
+
+        //Poll status endpoint until video is processed
+        pollForFinished(call, function(){renderIframe(data);});
+      },
+      error: function(XMLHttpRequest, textStatus, errorThrown) {
+        console.log("Upload Failed for video: " + errorThrown);
+      },
+      xhr: function() {
+        //Monitor and display the percentage uploaded
+        var xhr = new window.XMLHttpRequest();
+        xhr.upload.addEventListener("progress", function(evt) {
+          if (evt.lengthComputable) {
+            var percentComplete = (evt.loaded / evt.total) * 100.0;
+            var text = percentComplete.toFixed(2) + "% uploaded."
+            $(".video-display").html('<p>' + text + '</p>');
+          }
+        }, false);
+        return xhr;
+      }
+    });
+  });
+});
+
+var successText = function(data) {
+  $("#upload-button").css('display', 'none');
+  $(".url-display").html("<h1>URL</h1>");
+  $(".embed-code").html("<h1>Embed Code</h1><p>You can copy and paste this embed code while the video processes.</p>");
+  $('.url-display').append("<p><a target='_blank' href='" + data.url + "'>" + data.url + "</a></p>")
+  $(".embed-code").append(
+    "<textarea name='textarea' rows='7' cols='50'>" + data.html + "</textarea>");
+  $(".video-display").html("<h1>Video</h1><p>The video is currently processing and will display momentarily.</p>");
+}
+
+var renderIframe = function(data) {
+  $("#loader").css('display', "none");
+  $("#progress-percent").css('display', "none");
+  $(".video-display").html('<h1>Video</h1><p>' + data.html + '</p>');
+};
+
+
+var checkProcessed = function(_call, cb) {
+  $.ajax({
+    url: _call,
+    type: 'GET',
+    success: function(d) {
+      cb(d);
+    },
+    error: function(d) {
+      console.log('error!' + JSON.stringify(d));
+      cb(d);
+    }
+  });
+}
+
+var pollForFinished = function(_call, cb) {
+  checkProcessed(_call, function(res) {
+    if (res.status == "finished") {
+      cb();
+    } 
+    else if(res.status == "cancelled" || res.status =="failed"){
+		   $(".video-display").html('<h1>Video</h1><p>' + res.status + '</p>');
+		}
+    else {
+      setTimeout(pollForFinished(_call,cb), 10000);
+    }
+  });
+}
+</script>
+</html> {% endcomment %}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale = 1.0, maximum-scale = 1.0, user-scalable=no">
+<style type="text/css">
+
+body {
+	margin: 0;
+}
+
+#video-demo-container {
+	width: 400px;
+	margin: 40px auto;
+}
+
+#main-video {
+	display: none;
+	max-width: 400px;
+}
+
+#thumbnail-container {
+	display: none;
+}
+
+#get-thumbnail {
+	display: none;
+}
+
+#video-canvas {
+	display: none;
+}
+
+#upload-button {
+	width: 150px;
+	display: block;
+	margin: 20px auto;
+}
+
+#file-to-upload {
+	display: none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="video-demo-container">
+	<button id="upload-button">Select MP4 Video</button> 
+	<input type="file" id="file-to-upload" accept="video/mp4" />
+	<video id="main-video" controls>
+		<source type="video/mp4">
+	</video>
+	<canvas id="video-canvas"></canvas>
+	<div id="thumbnail-container">
+		 Seek to <select id="set-video-seconds"></select> seconds <a id="get-thumbnail" href="#">Download Thumbnail</a>
+	</div>
+</div>
+
+
+<script>
+
+var _CANVAS = document.querySelector("#video-canvas"),
+	_CTX = _CANVAS.getContext("2d"),
+	_VIDEO = document.querySelector("#main-video");
+
+// Upon click this should should trigger click on the #file-to-upload file input element
+// This is better than showing the not-good-looking file input element
+document.querySelector("#upload-button").addEventListener('click', function() {
+	document.querySelector("#file-to-upload").click();
+});
+
+// When user chooses a MP4 file
+document.querySelector("#file-to-upload").addEventListener('change', function() {
+	// Validate whether MP4
+    if(['video/mp4'].indexOf(document.querySelector("#file-to-upload").files[0].type) == -1) {
+        alert('Error : Only MP4 format allowed');
+        return;
+    }
+
+    // Hide upload button
+    document.querySelector("#upload-button").style.display = 'none';
+
+	// Object Url as the video source
+	document.querySelector("#main-video source").setAttribute('src', URL.createObjectURL(document.querySelector("#file-to-upload").files[0]));
+	
+	// Load the video and show it
+	_VIDEO.load();
+	_VIDEO.style.display = 'inline';
+	
+	// Load metadata of the video to get video duration and dimensions
+	_VIDEO.addEventListener('loadedmetadata', function() { console.log(_VIDEO.duration);
+	    var video_duration = _VIDEO.duration,
+	    	duration_options_html = '';
+
+	    // Set options in dropdown at 4 second interval
+	    for(var i=0; i<Math.floor(video_duration); i=i+4) {
+	    	duration_options_html += '<option value="' + i + '">' + i + '</option>';
+	    }
+	    document.querySelector("#set-video-seconds").innerHTML = duration_options_html;
+	    
+	    // Show the dropdown container
+	    document.querySelector("#thumbnail-container").style.display = 'block';
+
+	    // Set canvas dimensions same as video dimensions
+	    _CANVAS.width = _VIDEO.videoWidth;
+		_CANVAS.height = _VIDEO.videoHeight;
+	});
+});
+
+// On changing the duration dropdown, seek the video to that duration
+document.querySelector("#set-video-seconds").addEventListener('change', function() {
+    _VIDEO.currentTime = document.querySelector("#set-video-seconds").value;
+    
+    // Seeking might take a few milliseconds, so disable the dropdown and hide download link 
+    document.querySelector("#set-video-seconds").disabled = true;
+    document.querySelector("#get-thumbnail").style.display = 'none';
+});
+
+// Seeking video to the specified duration is complete 
+document.querySelector("#main-video").addEventListener('timeupdate', function() {
+	// Re-enable the dropdown and show the Download link
+	document.querySelector("#set-video-seconds").disabled = false;
+    document.querySelector("#get-thumbnail").style.display = 'inline';
+});
+
+// On clicking the Download button set the video in the canvas and download the base-64 encoded image data
+document.querySelector("#get-thumbnail").addEventListener('click', function() {
+    _CTX.drawImage(_VIDEO, 0, 0, _VIDEO.videoWidth, _VIDEO.videoHeight);
+
+	document.querySelector("#get-thumbnail").setAttribute('href', _CANVAS.toDataURL());
+	document.querySelector("#get-thumbnail").setAttribute('download', 'thumbnail.png');
+});
+
+</script>
+
+</body>
+</html>

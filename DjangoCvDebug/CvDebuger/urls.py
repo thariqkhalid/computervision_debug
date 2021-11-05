@@ -12,6 +12,9 @@ urlpatterns = [
     path('compare/', views.compare, name='compare'),
     path('test/', views.test, name='test'),
     path('test2/', views.test2, name='test2'),
+    path('videoupload/', views.videoupload, name='videoupload'),
+    path('Builderapp/', views.Builderapp, name='Builderapp'),
+    path('pannellum/', views.pannellum, name='pannellum'),
 ]
 
 
