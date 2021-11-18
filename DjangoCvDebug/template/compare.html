@@ -7,8 +7,10 @@
     <title>Home</title>
     <style>
          body{
-    
-    width: auto;
+  margin: 0;
+  border-style: solid;
+  border-width: 5px;
+    width: 100%;
     
     }
     .gallery-text {
@@ -42,16 +44,43 @@
     background-size: cover;
     }
     
-    .container {
-    position: fixed;
-    display: flex;
+    .footer {
+        padding: 0px;
+  text-align: center;
+  background: #ddd;
+  margin-top: 20px;
+    position:fixed;
+    display: none;
     bottom: 0;
+    padding-top: 0px;
+    padding-bottom: 0px;
     width: 100%;
 }
+.pagination {
+  display: inline-block;
+}
+
+.pagination a {
+  color: black;
+  float: left;
+  padding: 8px 16px;
+  text-decoration: none;
+  transition: background-color .3s;
+  border: 1px solid #ddd;
+  margin: 0 4px;
+}
+
+.pagination a.active {
+  background-color: #4CAF50;
+  color: white;
+  border: 1px solid #4CAF50;
+}
+
+.pagination a:hover:not(.active) {background-color: #4CAF50;}
     </style>
 
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<!-- <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script> -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -78,15 +107,22 @@
        
         
     </div>
-    <div class="container">
+    <!-- <div class="container">
                             
         <ul class="pager">
             <li class="previous"><a href="#"onclick="PreviousImage()">Previous</a></li>
             <li class="next"><a href="#"onclick="NextImage()">Next</a></li>
         </ul>
-    </div> 
+    </div>  -->
+    <div class="footer">
+       
+        <nav  class ="pagination" aria-label="Page navigation example">
             
+        </nav>
+        
+</div>
    
+    
 
     
 </body>
@@ -118,20 +154,24 @@ $(document).ready(function() {
 
 
 //save input images
-var Inimagefiles=[]
+var Inimagefile=[];
+var Inimagefiles=[];
 function SaveInputImagesInArray(){
     if (window.File && window.FileList && window.FileReader) {
         var files = event.target.files; //FileList object
         for (let i = 0; i <=files.length ; i++) {
             var file = files[i];
-            Inimagefiles.push(file);
+            Inimagefile.push(file);
         }
         
 
-console.log(Inimagefiles)
+console.log(Inimagefile);
 }
-SortFiles(Inimagefiles);
-
+SortFiles(Inimagefile);
+for (let i = 0; i <=Inimagefile.length ; i++) {
+            var file = Inimagefile[i];
+            Inimagefiles.push(file);
+        };
 };
 
 
@@ -150,32 +190,49 @@ function SortFiles(inputarray){
 
 
 //save output images
-var Outimagefiles=[]
+var Outimagefile=[];
+var Outimagefiles=[];
 function SaveOutputImagesInArray(){
     if (window.File && window.FileList && window.FileReader) {
         var files = event.target.files; //FileList object
         for (let i = 0; i <=files.length ; i++) {
             var file = files[i];
-            Outimagefiles.push(file);
+            Outimagefile.push(file);
         }
         
 
 }
-SortFiles(Outimagefiles);
+SortFiles(Outimagefile);
+for (let i = 0; i <=Outimagefile.length ; i++) {
+            var file = Outimagefile[i];
+            Outimagefiles.push(file);
+        };
 
 };
 
 
 // read and display images
 function ShowInImage() {
+    
+    
     console.log('run show started')
    //FileList object
 var input = $(".preview-input-zone");
-
-for (let i = 0; i <= Inimagefiles.length ; i++) {
+var j=1;
+ //if the input length can be divided by 19 (%) = and leavs a remainder of 0 then add a list item for footer
+for (let i =0; i < Inimagefiles.length; i++) {
+ 
+    if (i % 19 === 0) {
+        console.log(i);
+        AddfootLI(j);
+        j = j+1;
+    }
+};
+for (let i = 0; i <= 19 ; i++) {
    var file = Inimagefiles[i];
-   console.log(file);
    
+   
+    // console.log(res);
    if (!file.type.match('image')) continue;
    
    var picReader = new FileReader();
@@ -191,16 +248,37 @@ for (let i = 0; i <= Inimagefiles.length ; i++) {
 
 
        input.append(html);
+  
        
        
    });
 
    picReader.readAsDataURL(file);
-}
+   $(".footer").css({"display":"block"});
+
+};
 
 $("#pro-image").val('');
 
-}
+
+};
+// footer list item adding function
+
+function AddfootLI(j){
+    var footer =  $(".pagination");
+    if(j==1){
+        var div = '<a class="active" onclick="NextImage('+j+')">'+ j +'</a>';
+        footer.append(div);
+    }
+    else{
+        var div = '<a class="" onclick=" NextImage('+j+')">'+ j +'</a>';
+   footer.append(div);
+   console.log(div);
+    }
+    
+  
+};
+
 
 // read and display images
 function ShowOutImage() {
@@ -209,7 +287,7 @@ function ShowOutImage() {
     var output = $(".preview-output-zone");
     console.log(output)
     
-    for (let i = 0; i <= Outimagefiles.length ; i++) {
+    for (let i = 0; i <= 19; i++) {
         var file = Outimagefiles[i];
         console.log(file)
         if (!file.type.match('image')) continue;
@@ -237,8 +315,8 @@ function ShowOutImage() {
 
 }
 
-var StartNextImgBatch =20
-var EndNextImgBatch =39
+var StartNextImgBatch =1
+var EndNextImgBatch =19
 
 function PreviousImage(){
     
@@ -247,26 +325,36 @@ function PreviousImage(){
     PreviousoutImage();
 
 
-}
-function NextImage(){
-    NextinImage();
-    NextoutImage();
+};
+
+
+
+
+function NextImage(next){
+    $('.pagination a').removeClass('active');
+    $(this).addClass("active"); 
+
+
+    start= next * StartNextImgBatch;
+    end= next * EndNextImgBatch;
+    NextinImage(start,end);
+    NextoutImage(start,end);
 
 }
 // NEXT input IMAGES FUNCTION
-function NextinImage() {
+function NextinImage(start,end) {
     var output = $(".preview-input-zone");
      // get the old images and removing it
     for (let i = 0; i <=20 ; i++) {
             $(".preview-image.preview-show-"+i).remove();
         }
 
-    for (let i=StartNextImgBatch;i<EndNextImgBatch;i++){
+    for (let i=start;i<end;i++){
         $(".preview-image.preview-show-"+i).remove();
     };
   
-    SortFiles(Inimagefiles);
-    for (let i = StartNextImgBatch; i < EndNextImgBatch; i++) {
+    
+    for (let i =start; i < end; i++) {
         
         var file = Inimagefiles[i];
         
@@ -276,9 +364,9 @@ function NextinImage() {
         
         picReader.addEventListener('load', function (event) {
             var picFile = event.target;
-            var html =  '<div class="preview-image preview-show-' + StartNextImgBatch + '">' +
-                        '<div class="image-cancel" data-no="' + StartNextImgBatch + '">x</div>' +
-                        '<div class="image-zone"><img id="pro-img-' + StartNextImgBatch + '" src="' + picFile.result + '"></div>' ;
+            var html =  '<div class="preview-image preview-show-' + start + '">' +
+                        '<div class="image-cancel" data-no="' + start + '">x</div>' +
+                        '<div class="image-zone"><img id="pro-img-' + start + '" src="' + picFile.result + '"></div>' ;
                         // +
                         // '<div class="tools-edit-image"><a href="javascript:void(0)" data-no="' + num + '" class="btn btn-light btn-edit-image">edit</a></div>' +
                         // '</div>';
@@ -290,12 +378,12 @@ function NextinImage() {
 
         picReader.readAsDataURL(file);
     }
-    StartNextImgBatch = StartNextImgBatch + 20 ;
-    EndNextImgBatch=  EndNextImgBatch + 20 ;
+    // StartNextImgBatch = StartNextImgBatch + 20 ;
+    // EndNextImgBatch=  EndNextImgBatch + 20 ;
    
     $("#pro-image").val('');
     
-console.log(StartNextImgBatch,EndNextImgBatch);
+
 }
 
 // PREVIOUS input IMAGES FUNCTION
@@ -306,7 +394,7 @@ function PreviousinImage() {
         $(".preview-image.preview-show-"+i).remove();
     };
 
-    SortFiles(Inimagefiles);
+    
     for (let i = EndNextImgBatch; i >=StartNextImgBatch ; i--) {
         
         var file = Inimagefiles[i];
@@ -333,27 +421,27 @@ function PreviousinImage() {
     }
     
     $("#pro-image").val('');
-    StartNextImgBatch = StartNextImgBatch - 20 ;
-    EndNextImgBatch=  EndNextImgBatch - 20 ;
-    console.log(StartNextImgBatch,EndNextImgBatch)
+    // StartNextImgBatch = StartNextImgBatch - 20 ;
+    // EndNextImgBatch=  EndNextImgBatch - 20 ;
+    // console.log(StartNextImgBatch,EndNextImgBatch)
     
 
 }
 // NEXT output IMAGES FUNCTION
-function NextoutImage() {
+function NextoutImage(start,end) {
     var output = $(".preview-output-zone");
      // get the old images and removing it
     for (let i = 0; i <=20 ; i++) {
             $(".preview-image.preview-show-"+i).remove();
         }
 
-    for (let i=StartNextImgBatch;i<EndNextImgBatch;i++){
+    for (let i=start;i<end;i++){
         $(".preview-image.preview-show-"+i).remove();
     }
   
   
-    SortFiles(Outimagefiles);
-    for (let i = StartNextImgBatch; i < EndNextImgBatch; i++) {
+    
+    for (let i = start; i < end; i++) {
         
         var file = Outimagefiles[i];
         
@@ -363,9 +451,9 @@ function NextoutImage() {
         
         picReader.addEventListener('load', function (event) {
             var picFile = event.target;
-            var html =  '<div class="preview-image preview-show-' + StartNextImgBatch + '">' +
-                        '<div class="image-cancel" data-no="' + StartNextImgBatch + '">x</div>' +
-                        '<div class="image-zone"><img id="pro-img-' + StartNextImgBatch + '" src="' + picFile.result + '"></div>' ;
+            var html =  '<div class="preview-image preview-show-' + start + '">' +
+                        '<div class="image-cancel" data-no="' + start + '">x</div>' +
+                        '<div class="image-zone"><img id="pro-img-' + start + '" src="' + picFile.result + '"></div>' ;
                         // +
                         // '<div class="tools-edit-image"><a href="javascript:void(0)" data-no="' + num + '" class="btn btn-light btn-edit-image">edit</a></div>' +
                         // '</div>';
@@ -377,12 +465,12 @@ function NextoutImage() {
 
         picReader.readAsDataURL(file);
     }
-    StartNextImgBatch = StartNextImgBatch + 20 ;
-    EndNextImgBatch=  EndNextImgBatch + 20 ;
+    // StartNextImgBatch = StartNextImgBatch + 20 ;
+    // EndNextImgBatch=  EndNextImgBatch + 20 ;
    
     $("#pro-image").val('');
     
-console.log(StartNextImgBatch,EndNextImgBatch);
+
 }
 
 // PREVIOUS  output IMAGES FUNCTION
@@ -393,7 +481,6 @@ function PreviousoutImage() {
         $(".preview-image.preview-show-"+i).remove();
     };
 
-    SortFiles(Outimagefiles);
     
     for (let i = EndNextImgBatch; i >=StartNextImgBatch ; i--) {
         
